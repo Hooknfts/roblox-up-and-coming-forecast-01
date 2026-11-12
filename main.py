@@ -111,7 +111,15 @@ DEST_BINS = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7),
              (8, 8), (9, 9), (10, 10), (11, 15), (16, 20), (21, 30),
              (31, 50), (51, 75), (76, 100), (101, 10 ** 9)]
 # Dirichlet smoothing mass, spread over the neighbouring band's prior.
-SMOOTH_ALPHA = 20.0
+# v2: raised 20 -> 100. The kernel's per-(band, bucket) cells are thin
+# (a top band has only a few dozen pairs per bucket), so the raw empirical
+# distribution is noisy; stronger shrinkage toward the pooled + neighbour
+# prior calibrates it. Chosen on the 6-window cross-window backtest, not
+# on the practice window alone: alpha 90-120 all beat v1 (mean -39.6 to
+# -39.5 vs -40.23, kit practice -34.59 to -34.68 vs -35.586), while
+# alpha 20 is -40.23 and alpha 160 falls back to -40.39. 100 is the
+# middle of that plateau, not a tuned peak.
+SMOOTH_ALPHA = 100.0
 
 INPUT_DIR = os.environ.get("MAKEFUN_INPUT_DIR", "/input")
 OUTPUT_DIR = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
